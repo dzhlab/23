@@ -1,377 +1,211 @@
-# 🏅 Система управления соревнованиями по художественной гимнастике
+# Система управления соревнованиями по спортивной гимнастике
 
-Полнофункциональная веб-система для организации и проведения соревнований по художественной гимнастике с поддержкой правил FIG 2025-2028.
+Веб-приложение для организации и проведения соревнований по спортивной гимнастике в соответствии с правилами FIG 2025-2028.
 
-## 📋 Содержание
+## Описание
 
-- [Описание проекта](#описание-проекта)
-- [Технологический стек](#технологический-стек)
-- [Основные возможности](#основные-возможности)
-- [Требования](#требования)
-- [Установка и запуск](#установка-и-запуск)
-- [Структура проекта](#структура-проекта)
-- [Документация](#документация)
-- [Разработка](#разработка)
-- [Тестирование](#тестирование)
-- [Развертывание](#развертывание)
-- [Лицензия](#лицензия)
+Полнофункциональная система для управления соревнованиями по спортивной гимнастике, включающая:
 
-## 📖 Описание проекта
+- **Регистрация и аутентификация** пользователей с различными ролями
+- **Управление соревнованиями** (создание, редактирование, удаление)
+- **Регистрация спортсменов** и команд на соревнования
+- **Судейская система** в соответствии с правилами FIG
+- **Подсчет баллов** и формирование рейтингов
+- **Формирование отчетов** и протоколов соревнований
 
-Система предназначена для автоматизации процесса проведения соревнований по художественной гимнастике, включая:
-
-- Управление соревнованиями и участниками
-- Судейство в режиме реального времени
-- Автоматический расчет оценок по правилам FIG 2025-2028
-- Генерацию протоколов и отчетов
-- Статистику и аналитику
-
-## 🛠 Технологический стек
+## Технологический стек
 
 ### Backend
-- **Node.js** - серверная платформа
-- **Express** - веб-фреймворк
-- **TypeScript** - типизированный JavaScript
-- **PostgreSQL** - реляционная база данных
-- **Redis** - кеширование и очереди
-- **Socket.io** - WebSocket для real-time
-- **TypeORM** - ORM для работы с БД
-- **Jest** - фреймворк для тестирования
+- **Node.js** 18+
+- **Express.js** 4.18
+- **TypeScript** 5.3
+- **PostgreSQL** 15
+- **TypeORM** 0.3
+- **JWT** для аутентификации
+- **Bcrypt** для хеширования паролей
+- **Joi** для валидации данных
+- **Winston** для логирования
 
 ### Frontend
-- **React** - библиотека для UI
-- **TypeScript** - типизация
-- **Vite** - сборщик и dev-сервер
-- **Material-UI** - UI компоненты
-- **Zustand** - state management
-- **React Hook Form** - управление формами
-- **Axios** - HTTP клиент
-- **Vitest** - тестирование
+- **React** 18
+- **TypeScript** 5.3
+- **Material-UI** 5
+- **React Router** 6
+- **Zustand** для управления состоянием
+- **Axios** для HTTP-запросов
+- **React Hook Form** + **Zod** для валидации форм
+- **Vite** как сборщик
 
 ### DevOps
-- **Docker** - контейнеризация
-- **Docker Compose** - оркестрация контейнеров
-- **Nginx** - обратный прокси
-- **GitHub Actions** - CI/CD (планируется)
+- **Docker** и **Docker Compose**
+- **Nginx** как reverse proxy
+- **PostgreSQL** 15
+- **Redis** для кеширования
 
-## ✨ Основные возможности
+## Роли пользователей
 
-### 1. Управление соревнованиями
-- Создание и настройка соревнований
-- Управление группами и потоками
-- Жеребьевка участников (3 алгоритма)
-- Распределение по потокам
+Система поддерживает 14 ролей:
 
-### 2. Судейская система
-- 3 типа интерфейсов судьи (расширенный, сбалансированный, упрощенный)
-- Бригады D, E, A судей
-- Автоматический расчет оценок по FIG 2025-2028
-- Механизм консенсуса судей
-- Автосохранение оценок
+1. **admin** - Администратор системы
+2. **organizer** - Организатор соревнований
+3. **chief_judge** - Главный судья
+4. **difficulty_judge** - Судья по сложности (D-бригада)
+5. **execution_judge** - Судья по исполнению (E-бригада)
+6. **artistic_judge** - Судья по артистизму (A-бригада)
+7. **line_judge** - Линейный судья
+8. **time_judge** - Судья-хронометрист
+9. **coach** - Тренер
+10. **athlete** - Спортсмен
+11. **spectator** - Зритель
+12. **moderator** - Модератор
+13. **analytics** - Аналитик
+14. **technical_delegate** - Технический делегат
 
-### 3. Панель главного судьи
-- Мониторинг всех бригад в реальном времени
-- Анализ расхождений оценок
-- Управление консенсусом
-- Статистика работы судей
+## Структура проекта
 
-### 4. Real-time обновления
-- WebSocket синхронизация
-- Онлайн табло для зрителей
-- Инфокиоск
-
-### 5. Отчеты и экспорт
-- Генерация протоколов
-- Экспорт в Excel
-- Экспорт в PDF
-- Статистика и аналитика
-
-### 6. Безопасность
-- JWT аутентификация
-- RBAC (11 ролей)
-- Защита от SQL-инъекций и XSS
-- Rate limiting
-- Шифрование данных
-
-## 📦 Требования
-
-### Минимальные требования:
-- Node.js >= 18.0.0
-- npm >= 9.0.0
-- Docker >= 20.10.0 (для запуска через Docker)
-- Docker Compose >= 2.0.0
-- PostgreSQL >= 15.0 (если запуск без Docker)
-- Redis >= 7.0 (если запуск без Docker)
-
-### Рекомендуемые требования:
-- Node.js >= 20.0.0
-- 4 GB RAM
-- 10 GB свободного места на диске
-
-## 🚀 Установка и запуск
-
-### Способ 1: Запуск через Docker (рекомендуется)
-
-1. **Клонировать репозиторий:**
-```bash
-git clone https://github.com/yourusername/gymnastics-competition-system.git
-cd gymnastics-competition-system
+```
+.
+├── backend/               # Backend приложение
+│   ├── src/
+│   │   ├── config/       # Конфигурация
+│   │   ├── entities/     # TypeORM сущности
+│   │   ├── types/        # TypeScript типы
+│   │   ├── services/     # Бизнес-логика
+│   │   ├── controllers/  # HTTP контроллеры
+│   │   ├── middleware/   # Express middleware
+│   │   ├── routes/       # API маршруты
+│   │   ├── utils/        # Утилиты
+│   │   └── index.ts      # Точка входа
+│   ├── migrations/       # Миграции БД
+│   ├── seeds/           # Seed-данные
+│   └── package.json
+│
+├── frontend/             # Frontend приложение
+│   ├── src/
+│   │   ├── components/  # React компоненты
+│   │   ├── pages/       # Страницы
+│   │   ├── services/    # API сервисы
+│   │   ├── store/       # Zustand хранилища
+│   │   ├── types/       # TypeScript типы
+│   │   └── App.tsx
+│   └── package.json
+│
+├── database/            # Документация БД
+│   └── schema/
+│
+├── docs/               # Дополнительная документация
+│
+└── docker-compose.yml  # Docker Compose конфигурация
 ```
 
-2. **Создать файлы окружения:**
-```bash
-# Backend
-cp backend/.env.example backend/.env
-# Отредактируйте backend/.env и заполните необходимые значения
+## Установка и запуск
 
-# Frontend (если требуется)
-cp frontend/.env.example frontend/.env
-```
+### Требования
 
-3. **Запустить все сервисы:**
+- Node.js 18+
+- Docker и Docker Compose
+- PostgreSQL 15+ (если запуск без Docker)
+
+### Запуск с Docker
+
 ```bash
-# Запуск в development режиме
+# Клонировать репозиторий
+git clone https://github.com/dzhlab/2.git
+cd 2
+
+# Запустить все сервисы
 docker-compose up -d
 
-# Просмотр логов
-docker-compose logs -f
-
-# Остановка сервисов
-docker-compose down
+# Приложение будет доступно по адресу http://localhost
 ```
 
-4. **Доступ к приложению:**
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3000
-- API Health: http://localhost:3000/health
+### Локальный запуск
 
-### Способ 2: Запуск локально (без Docker)
+#### Backend
 
-1. **Установить зависимости:**
 ```bash
-# Backend
 cd backend
+
+# Установить зависимости
 npm install
-cd ..
 
-# Frontend
-cd frontend
-npm install
-cd ..
-```
+# Создать файл .env на основе .env.example
+cp .env.example .env
 
-2. **Запустить PostgreSQL и Redis:**
-```bash
-# PostgreSQL
-psql -U postgres -c "CREATE DATABASE gymnastics_db;"
+# Запустить миграции
+npm run migration:run
 
-# Redis
-redis-server
-```
+# Запустить seed-данные
+npm run seed:run
 
-3. **Настроить переменные окружения:**
-```bash
-# Backend
-cp backend/.env.example backend/.env
-# Отредактируйте .env файл
-
-# Frontend
-cp frontend/.env.example frontend/.env
-```
-
-4. **Запустить миграции базы данных:**
-```bash
-cd backend
-npm run migrate
-```
-
-5. **Запустить приложения:**
-```bash
-# Терминал 1: Backend
-cd backend
+# Запустить в режиме разработки
 npm run dev
 
-# Терминал 2: Frontend
+# Запустить в production
+npm run build
+npm start
+```
+
+#### Frontend
+
+```bash
 cd frontend
+
+# Установить зависимости
+npm install
+
+# Создать файл .env на основе .env.example
+cp .env.example .env
+
+# Запустить в режиме разработки
 npm run dev
+
+# Собрать для production
+npm run build
 ```
 
-## 📁 Структура проекта
+## API Endpoints
 
-```
-gymnastics-competition-system/
-├── backend/                    # Backend приложение
-│   ├── src/
-│   │   ├── models/            # Модели данных
-│   │   ├── controllers/       # Контроллеры
-│   │   ├── services/          # Бизнес-логика
-│   │   ├── middleware/        # Промежуточное ПО
-│   │   ├── routes/            # Маршруты API
-│   │   ├── utils/             # Утилиты
-│   │   ├── config/            # Конфигурация
-│   │   └── index.ts           # Точка входа
-│   ├── tests/                 # Тесты
-│   ├── Dockerfile             # Docker образ
-│   ├── package.json           # Зависимости
-│   └── tsconfig.json          # TypeScript конфигурация
-├── frontend/                   # Frontend приложение
-│   ├── src/
-│   │   ├── components/        # React компоненты
-│   │   ├── pages/             # Страницы
-│   │   ├── services/          # API сервисы
-│   │   ├── store/             # State management
-│   │   ├── hooks/             # Custom hooks
-│   │   ├── types/             # TypeScript типы
-│   │   └── utils/             # Утилиты
-│   ├── public/                # Статические файлы
-│   ├── Dockerfile             # Docker образ
-│   ├── package.json           # Зависимости
-│   └── tsconfig.json          # TypeScript конфигурация
-├── database/                   # База данных
-│   ├── migrations/            # Миграции
-│   └── seeds/                 # Начальные данные
-├── docs/                       # Документация
-│   ├── API.md                 # API документация
-│   ├── DATABASE_SCHEMA.md     # Схема БД
-│   ├── USER_GUIDE.md         # Руководство пользователя
-│   └── DEPLOYMENT.md          # Развертывание
-├── docker-compose.yml          # Docker Compose конфигурация
-├── .gitignore                 # Git ignore
-├── README.md                  # Этот файл
-├── DEVELOPMENT_PROGRESS.md    # Журнал разработки
-├── ФУНКЦИОНАЛЬНАЯ_СПЕЦИФИКАЦИЯ.md  # Спецификация
-└── ПЛАН_РАЗРАБОТКИ.md         # План разработки
-```
+### Пользователи
+- `POST /api/users/register` - Регистрация
+- `POST /api/users/login` - Вход
+- `POST /api/users/logout` - Выход
+- `POST /api/users/refresh-token` - Обновление токена
+- `GET /api/users/me` - Текущий пользователь
+- `GET /api/users/:id` - Получить пользователя
+- `PATCH /api/users/:id` - Обновить пользователя
+- `DELETE /api/users/:id` - Удалить пользователя
+- `GET /api/users` - Список пользователей
 
-## 📚 Документация
+### Соревнования
+- `POST /api/competitions` - Создать соревнование
+- `GET /api/competitions` - Список соревнований
+- `GET /api/competitions/:id` - Получить соревнование
+- `PATCH /api/competitions/:id` - Обновить соревнование
+- `DELETE /api/competitions/:id` - Удалить соревнование
 
-- [Функциональная спецификация](./ФУНКЦИОНАЛЬНАЯ_СПЕЦИФИКАЦИЯ.md) - полное описание функционала
-- [План разработки](./ПЛАН_РАЗРАБОТКИ.md) - детальный план разработки
-- [Журнал разработки](./DEVELOPMENT_PROGRESS.md) - прогресс разработки
-- [API документация](./docs/API.md) - описание API endpoints
-- [Схема базы данных](./docs/DATABASE_SCHEMA.md) - структура БД
-- [Руководство пользователя](./docs/USER_GUIDE.md) - инструкции для пользователей
+### Спортсмены
+- `POST /api/athletes` - Создать профиль спортсмена
+- `GET /api/athletes` - Список спортсменов
+- `GET /api/athletes/:id` - Получить спортсмена
+- `PATCH /api/athletes/:id` - Обновить спортсмена
+- `DELETE /api/athletes/:id` - Удалить спортсмена
 
-## 💻 Разработка
+### Выступления
+- `POST /api/performances` - Создать выступление
+- `GET /api/performances` - Список выступлений
+- `GET /api/performances/:id` - Получить выступление
+- `PATCH /api/performances/:id` - Обновить выступление
+- `DELETE /api/performances/:id` - Удалить выступление
 
-### Настройка среды разработки
+## Лицензия
 
-1. **Установить расширения VS Code (рекомендуется):**
-- ESLint
-- Prettier
-- TypeScript
-- Docker
-- GitLens
+MIT
 
-2. **Настроить Git hooks:**
-```bash
-# Установить husky для pre-commit hooks
-npm install -D husky
-npx husky install
-```
+## Автор
 
-### Соглашения по коду
+dzhlab
 
-1. **Все комментарии на русском языке**
-2. **Каждая строка кода должна иметь комментарий**
-3. **Использовать TypeScript для type safety**
-4. **Следовать принципам SOLID**
-5. **Писать тесты для нового функционала**
-6. **Использовать ESLint и Prettier**
+## Статус разработки
 
-### Git workflow
-
-1. Создать ветку для новой функции: `git checkout -b feature/название-функции`
-2. Делать коммиты с понятными сообщениями
-3. Создать Pull Request
-4. Дождаться code review
-5. Слить в main после одобрения
-
-## 🧪 Тестирование
-
-### Backend тесты
-```bash
-cd backend
-
-# Запустить все тесты
-npm test
-
-# Запустить с coverage
-npm run test:coverage
-
-# Запустить в watch mode
-npm run test:watch
-```
-
-### Frontend тесты
-```bash
-cd frontend
-
-# Запустить все тесты
-npm test
-
-# Запустить с UI
-npm run test:ui
-
-# Запустить с coverage
-npm run test:coverage
-```
-
-### E2E тесты
-```bash
-# TODO: Будет добавлено позже
-```
-
-## 🚢 Развертывание
-
-### Development
-```bash
-docker-compose up -d
-```
-
-### Production
-```bash
-# Сборка production образов
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
-
-# Запуск с Nginx
-docker-compose --profile production up -d
-```
-
-Подробные инструкции: [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
-
-## 🤝 Вклад в проект
-
-Мы приветствуем вклад в проект! Пожалуйста, следуйте этим шагам:
-
-1. Fork проекта
-2. Создайте ветку для функции (`git checkout -b feature/AmazingFeature`)
-3. Commit изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Push в ветку (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
-## 📄 Лицензия
-
-MIT License - см. файл [LICENSE](LICENSE)
-
-## 👥 Авторы
-
-- **Claude Code** - Разработка системы
-
-## 📧 Контакты
-
-- Email: support@gymnastics-system.com
-- Website: https://gymnastics-system.com
-- Issues: https://github.com/yourusername/gymnastics-competition-system/issues
-
-## 🙏 Благодарности
-
-- Федерация художественной гимнастики
-- FIG (Fédération Internationale de Gymnastique)
-- Все контрибьюторы проекта
-
----
-
-**Статус проекта:** 🟡 В разработке (Этап 1/8 завершено)
-
-**Последнее обновление:** 18.11.2025
+В активной разработке. См. файл DEVELOPMENT_PROGRESS.md для деталей.
