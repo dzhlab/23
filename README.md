@@ -185,18 +185,12 @@ npm run build
 - `DELETE /api/competitions/:id` - Удалить соревнование
 
 ### Спортсмены
-- `POST /api/athletes` - Создать профиль спортсмена
-- `GET /api/athletes` - Список спортсменов
-- `GET /api/athletes/:id` - Получить спортсмена
-- `PATCH /api/athletes/:id` - Обновить спортсмена
-- `DELETE /api/athletes/:id` - Удалить спортсмена
-
-### Выступления
-- `POST /api/performances` - Создать выступление
-- `GET /api/performances` - Список выступлений
-- `GET /api/performances/:id` - Получить выступление
-- `PATCH /api/performances/:id` - Обновить выступление
-- `DELETE /api/performances/:id` - Удалить выступление
+- `POST /api/athletes` - Создать профиль спортсмена (требуется аутентификация)
+- `GET /api/athletes` - Список спортсменов (требуется аутентификация)
+- `GET /api/athletes/:id` - Получить спортсмена (требуется аутентификация)
+- `GET /api/athletes/user/:userId` - Получить спортсмена по userId (требуется аутентификация)
+- `PATCH /api/athletes/:id` - Обновить спортсмена (требуется аутентификация)
+- `DELETE /api/athletes/:id` - Удалить спортсмена (требуется аутентификация)
 
 ## Лицензия
 
