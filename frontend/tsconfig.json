@@ -1,0 +1,99 @@
+{
+  "compilerOptions": {
+    // Указываем версию ECMAScript для компиляции
+    "target": "ES2020",
+
+    // Использовать библиотеки для браузера
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+    // Модульная система для ESM
+    "module": "ESNext",
+
+    // Разрешение модулей в стиле Node.js
+    "moduleResolution": "bundler",
+
+    // Разрешить использование JSX
+    "jsx": "react-jsx",
+
+    // Включить строгую проверку типов
+    "strict": true,
+
+    // Разрешить использование модулей ES6 вместе с CommonJS
+    "esModuleInterop": true,
+
+    // Пропускать проверку типов в библиотеках
+    "skipLibCheck": true,
+
+    // Обеспечить совместимость регистра имен файлов
+    "forceConsistentCasingInFileNames": true,
+
+    // Разрешить использование JSON модулей
+    "resolveJsonModule": true,
+
+    // Изолированные модули (важно для Vite)
+    "isolatedModules": true,
+
+    // Не генерировать файлы (Vite делает это сам)
+    "noEmit": true,
+
+    // Включить строгую проверку null и undefined
+    "strictNullChecks": true,
+
+    // Включить строгую проверку свойств функций
+    "strictFunctionTypes": true,
+
+    // Включить строгую проверку bind, call и apply
+    "strictBindCallApply": true,
+
+    // Включить строгую проверку свойств классов
+    "strictPropertyInitialization": true,
+
+    // Запретить неявный any
+    "noImplicitAny": true,
+
+    // Запретить неявный this
+    "noImplicitThis": true,
+
+    // Запретить неявный возврат
+    "noImplicitReturns": true,
+
+    // Запретить недостижимый код
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // Разрешить использование default импортов
+    "allowSyntheticDefaultImports": true,
+
+    // Настройки путей для импортов
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@pages/*": ["src/pages/*"],
+      "@services/*": ["src/services/*"],
+      "@store/*": ["src/store/*"],
+      "@utils/*": ["src/utils/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@types/*": ["src/types/*"]
+    },
+
+    // Разрешить использование import type
+    "verbatimModuleSyntax": true
+  },
+
+  // Включаемые файлы
+  "include": [
+    "src/**/*",
+    "src/**/*.tsx"
+  ],
+
+  // Исключаемые файлы
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build"
+  ],
+
+  // Ссылки на другие проекты (если нужно)
+  "references": []
+}
