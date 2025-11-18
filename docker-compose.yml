@@ -1,0 +1,293 @@
+# Файл: docker-compose.yml
+# Описание: Конфигурация Docker Compose для запуска всех сервисов приложения
+# Автор: Claude Code
+# Дата создания: 18.11.2025
+# Последнее изменение: 18.11.2025
+
+# Версия формата docker-compose
+version: '3.8'
+
+# Определение сервисов
+services:
+  # PostgreSQL база данных
+  postgres:
+    # Образ PostgreSQL версии 15 (Alpine для меньшего размера)
+    image: postgres:15-alpine
+
+    # Имя контейнера
+    container_name: gymnastics_postgres
+
+    # Переменные окружения для настройки PostgreSQL
+    environment:
+      # Имя базы данных
+      POSTGRES_DB: gymnastics_db
+
+      # Пользователь базы данных
+      POSTGRES_USER: postgres
+
+      # Пароль пользователя (в production использовать secrets)
+      POSTGRES_PASSWORD: password
+
+      # Кодировка базы данных
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=ru_RU.UTF-8 --lc-ctype=ru_RU.UTF-8
+
+    # Порты для доступа к БД
+    # Формат: порт_хоста:порт_контейнера
+    ports:
+      - "5432:5432"
+
+    # Тома для персистентного хранения данных
+    volumes:
+      # Данные PostgreSQL
+      - postgres_data:/var/lib/postgresql/data
+
+      # Скрипты инициализации (выполняются при первом запуске)
+      - ./database/init:/docker-entrypoint-initdb.d
+
+    # Политика перезапуска контейнера
+    restart: unless-stopped
+
+    # Сеть для связи между контейнерами
+    networks:
+      - gymnastics_network
+
+    # Проверка здоровья контейнера
+    healthcheck:
+      # Команда для проверки доступности БД
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+
+      # Интервал между проверками (в секундах)
+      interval: 10s
+
+      # Таймаут проверки
+      timeout: 5s
+
+      # Количество попыток перед признанием контейнера нездоровым
+      retries: 5
+
+  # Redis для кеширования и очередей
+  redis:
+    # Образ Redis версии 7 (Alpine)
+    image: redis:7-alpine
+
+    # Имя контейнера
+    container_name: gymnastics_redis
+
+    # Команда запуска с включенным AOF (Append Only File) для персистентности
+    command: redis-server --appendonly yes
+
+    # Порты
+    ports:
+      - "6379:6379"
+
+    # Тома для данных Redis
+    volumes:
+      - redis_data:/data
+
+    # Политика перезапуска
+    restart: unless-stopped
+
+    # Сеть
+    networks:
+      - gymnastics_network
+
+    # Проверка здоровья
+    healthcheck:
+      # Команда ping для проверки доступности Redis
+      test: ["CMD", "redis-cli", "ping"]
+
+      # Интервал проверки
+      interval: 10s
+
+      # Таймаут
+      timeout: 3s
+
+      # Количество попыток
+      retries: 5
+
+  # Backend API сервер
+  backend:
+    # Сборка из Dockerfile в директории backend
+    build:
+      # Контекст сборки
+      context: ./backend
+
+      # Путь к Dockerfile
+      dockerfile: Dockerfile
+
+    # Имя контейнера
+    container_name: gymnastics_backend
+
+    # Порты для API и WebSocket
+    ports:
+      # REST API
+      - "3000:3000"
+
+      # WebSocket
+      - "3001:3001"
+
+    # Переменные окружения (берутся из .env файла)
+    env_file:
+      - ./backend/.env
+
+    # Дополнительные переменные окружения
+    environment:
+      # Режим работы
+      NODE_ENV: development
+
+      # URL базы данных (ссылка на сервис postgres)
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/gymnastics_db
+
+      # URL Redis
+      REDIS_URL: redis://redis:6379
+
+    # Тома для живой перезагрузки в development
+    volumes:
+      # Исходный код backend
+      - ./backend/src:/app/src
+
+      # Логи
+      - ./backend/logs:/app/logs
+
+      # Резервные копии
+      - ./backend/backups:/app/backups
+
+    # Зависимости - ждем запуска postgres и redis
+    depends_on:
+      # Ждем, пока postgres будет healthy
+      postgres:
+        condition: service_healthy
+
+      # Ждем, пока redis будет healthy
+      redis:
+        condition: service_healthy
+
+    # Политика перезапуска
+    restart: unless-stopped
+
+    # Сеть
+    networks:
+      - gymnastics_network
+
+    # Проверка здоровья backend
+    healthcheck:
+      # HTTP запрос к health endpoint
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+
+      # Интервал проверки
+      interval: 30s
+
+      # Таймаут
+      timeout: 10s
+
+      # Количество попыток
+      retries: 3
+
+      # Задержка перед первой проверкой (даем время на запуск)
+      start_period: 40s
+
+  # Frontend приложение
+  frontend:
+    # Сборка из Dockerfile в директории frontend
+    build:
+      # Контекст сборки
+      context: ./frontend
+
+      # Dockerfile
+      dockerfile: Dockerfile
+
+    # Имя контейнера
+    container_name: gymnastics_frontend
+
+    # Порт для frontend (Vite dev server)
+    ports:
+      - "5173:5173"
+
+    # Переменные окружения
+    environment:
+      # URL backend API
+      VITE_API_URL: http://localhost:3000
+
+      # URL WebSocket
+      VITE_WS_URL: http://localhost:3001
+
+    # Тома для живой перезагрузки
+    volumes:
+      # Исходный код frontend
+      - ./frontend/src:/app/src
+
+      # Публичные файлы
+      - ./frontend/public:/app/public
+
+    # Зависимости - ждем запуска backend
+    depends_on:
+      - backend
+
+    # Политика перезапуска
+    restart: unless-stopped
+
+    # Сеть
+    networks:
+      - gymnastics_network
+
+  # Nginx (обратный прокси для production)
+  nginx:
+    # Образ Nginx
+    image: nginx:alpine
+
+    # Имя контейнера
+    container_name: gymnastics_nginx
+
+    # Порты
+    ports:
+      # HTTP
+      - "80:80"
+
+      # HTTPS
+      - "443:443"
+
+    # Тома
+    volumes:
+      # Конфигурация Nginx
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+      # SSL сертификаты
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+
+      # Статические файлы frontend (после сборки)
+      - ./frontend/dist:/usr/share/nginx/html:ro
+
+    # Зависимости
+    depends_on:
+      - backend
+      - frontend
+
+    # Политика перезапуска
+    restart: unless-stopped
+
+    # Сеть
+    networks:
+      - gymnastics_network
+
+    # Запускаем только в production
+    profiles:
+      - production
+
+# Определение томов для персистентного хранения данных
+volumes:
+  # Том для данных PostgreSQL
+  postgres_data:
+    # Драйвер по умолчанию (local)
+    driver: local
+
+  # Том для данных Redis
+  redis_data:
+    # Драйвер по умолчанию
+    driver: local
+
+# Определение сетей
+networks:
+  # Сеть для связи между контейнерами
+  gymnastics_network:
+    # Драйвер bridge для создания виртуальной сети
+    driver: bridge
